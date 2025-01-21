@@ -139,8 +139,10 @@ class island:
        sucssrate = random.randint(1,100)
        if sucssrate > self.death:
                    #loot
-           if pirate.eff == 'none':
-                pirate.eff = self._eff
+           if pirate:
+                pirate.occupied = True
+                if pirate.eff == 'none':
+                        pirate.eff = self._eff
        else:
            pirate.hp = False
            
@@ -148,6 +150,7 @@ class island:
     def explore(self, pirate):
         if pirate:
             self.explore = True
+            pirate.occupied = True
 
         
               
@@ -314,7 +317,17 @@ def seaMenu(sea):
             input('input invalido, aperte enter para tentar novamente...')
         match s:
             case 1:
-                sea[r].raid
+                for i in range(unoccupied_pirates):
+                    print(f'{i} ||{unoccupied_pirates[i].name}')
+                    print('selecione um grupo pirata')
+                try:
+                    p = int(input('>>>'))
+                    if p < len(unoccupied_pirates) and p > 0:
+                            break
+                except:
+                        input('input invalido, aperte enter para tentar novamente...')
+                
+                sea[r].raid(unoccupied_pirates[p])
             case 2:
                 for i in range(unoccupied_pirates):
                     print(f'{i} ||{unoccupied_pirates[i].name}')
