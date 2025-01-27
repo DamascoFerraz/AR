@@ -1,54 +1,47 @@
 import os, random
 
-log = []
-
 # region boat
-class boat:
-    def __init__(self,nome):
-        self.nome = nome
+class Boat:
+    def __init__(self, name):
+        self.name = name
         self.hp = 100
         self.eff = 'normal'
         self.gold = 100
         self.rep = 50
 
-    def showStatus(self):
-        return f'\n|[Status de {self.nome}]:\n| - HP:[{self.hp}/100]\n| - eff: {self.eff}\n| - ouro: {self.gold}\n| - reputação:{self.rep}\n'
+    def show_status(self):
+        return f'\n|[Status de {self.name}]:\n| - HP:[{self.hp}/100]\n| - eff: {self.eff}\n| - ouro: {self.gold}\n| - reputação:{self.rep}\n'
 
-    def addEffect(self,):
-        pass
-# endregion
+# endregion boat
 
 # region item
-class item:
-    def __init__(self,name,qnt = 0,val = 1):
+class Item:
+    def __init__(self, name, qnt=0, val=1):
         self.name = name
         self.qnt = qnt
         self.val = val
     
-    def changeqnt(self,x):
+    def change_qnt(self, x):
         if self.qnt >= x:
-            self.qnt+=x
+            self.qnt += x
             return 1
         else:
             return 0
-
-class passItem(item):
-    def __init__(self,name, perday, qnt=0, val=1):
+# region >>Item_use
+class PassItem(Item):
+    def __init__(self, name, qnt=0, val=1):
         super().__init__(name, qnt, val)
-        self.perday = perday
 
-class activeItem(item):
-    def __init__(self,name , eff = 'none', qnt=0, val=1):
+class ActiveItem(Item):
+    def __init__(self, name, eff='none', qnt=0, val=1):
         super().__init__(name, qnt, val)
         self.eff = eff
-
-    def useItem(self):
-        log.append(f'{self.name}_used')
-# endregion
+# endregion >>Item_use
+# endregion item
 
 # region pirate
 pirate_names = [
-        "Piratas do Caribe",
+    "Piratas do Caribe",
     "Bucaneiros",
     "Corsários",
     "Filhos de Poseidon",
@@ -57,115 +50,72 @@ pirate_names = [
     "Papagaios Falantes",
     "Marujos Fantasmas",
     "Assombradores dos Sete Mares",
-    "Reis do Mar"]
-class pirate:
-    def __init__(self,
-                name = random.choice(pirate_names),
-                hp = True,
-                adj = 'null',
-                status = 'normal',
-                eff_cap = 'null',
-                occupied = False
-                ) -> None:
+    "Reis do Mar"
+]
+
+class Pirate:
+    def __init__(self, name=random.choice(pirate_names), hp=100, adj='null', status='normal', occupied=False):
         self.name = name
         self.hp = hp
         self.adj = adj
         self.status = status
-        self.eff_cap = eff_cap
         self.occupied = occupied
-# endregion
+# endregion pirate
 
 # region island
-islandnames = ['guaxupé','muzambinho',
-    "Ilha da Caveira",
-    "Ilha Perdida",
-    "Ilha do Tesouro",
-    "Ilha Tortuga",
-    "Ilha dos Esqueletos",
-    "Ilha Misteriosa",
-    "Ilha do Diabo",
-    "Ilha das Sombras",
-    "Ilha das Sereias",
-    "Ilha dos Canibais"]
-islandeffects = [
-    ['tired','hungry','weak',],
-    ['tired','weak','hungry','hurt','poisoned','bleeding'],
-    ['tired','weak','hungry','hurt','poisoned','bleeding','ckripled','burnt','mad','traidor']
+island_names = [
+    'guaxupé', 'muzambinho', "Ilha da Caveira", "Ilha Perdida", "Ilha do Tesouro", "Ilha Tortuga",
+    "Ilha dos Esqueletos", "Ilha Misteriosa", "Ilha do Diabo", "Ilha das Sombras", "Ilha das Sereias", "Ilha dos Canibais"
 ]
-class island:
-    def __init__(self,
-                dif = 'medium',
-                explored = False
-                ):
-        
-        self.name = random.choice(islandnames)
-        self.explored = explored
+island_effects = [
+    ['tired', 'hungry', 'weak'],
+    ['tired', 'weak', 'hungry', 'hurt', 'poisoned', 'bleeding'],
+    ['tired', 'weak', 'hungry', 'hurt', 'poisoned', 'bleeding', 'crippled', 'burnt', 'mad', 'traitor']
+]
 
+class Island:
+    def __init__(self, dif='medium', explored=False):
+        self.name = random.choice(island_names)
+        self.explored = explored
+        self.raided = False
 
         if dif == 'easy':
             self._dif = dif
-            self.loot = 10
-            self.death = 5
-            self.caract = random.choice(['beatch','forest','merchant','village'])
-            
-            if random.randint(1,5) == 1:
-                self._eff = random.choice(islandeffects[1])
-            else:
-                self._eff = 'normal'
+            self.loot = random.randint(10, 50)
+            self.death = random.randint(1, 5)
+            self.caract = random.choice(['beach', 'forest', 'merchant', 'village'])
+            self._eff = random.choice(island_effects[1]) if random.randint(1, 5) == 1 else 'normal'
 
         elif dif == 'medium':
             self._dif = dif
-            self.loot = 50
-            self.death = 10
-            self.caract = random.choice(['beatch','forest','merchant','village'])
-
-            if random.randint(1,4) == 1:
-                self._eff = random.choice(islandeffects[2])
-            else:
-                self._eff = 'normal'
+            self.loot = random.randint(50, 100)
+            self.death = random.randint(5, 10)
+            self.caract = random.choice(['beach', 'forest', 'merchant', 'village'])
+            self._eff = random.choice(island_effects[2]) if random.randint(1, 4) == 1 else 'normal'
 
         elif dif == 'hard':
             self._dif = dif
-            self.loot = 100
-            self.death = 20
-            self.caract = random.choice(['beatch','forest','merchant','village'])
-            
-            if random.randint(1,3) == 1:
-                self._eff = random.choice(islandeffects[3])
-            else:
-                self._eff = 'normal'
-    
-    def raid(self, pirate):
-       sucssrate = random.randint(1,100)
-       if sucssrate > self.death:
-                   #loot
-           if pirate:
-                pirate.occupied = True
-                if pirate.eff == 'none':
-                        pirate.eff = self._eff
-       else:
-           pirate.hp = False
-           
+            self.loot = random.randint(100, 200)
+            self.death = random.randint(10, 20)
+            self.caract = random.choice(['beach', 'forest', 'merchant', 'village'])
+            self._eff = random.choice(island_effects[2]) if random.randint(1, 3) == 1 else 'normal'
 
     def explore(self, pirate):
         if pirate:
-            self.explore = True
-            pirate.occupied = True
-
-        
-              
-class outpost(island):
-    def __init__(self, explored=True, lv = 1):
-        super().__init__(explored)
+            self.explored = True
+# region >>Outpost
+class Outpost(Island):
+    def __init__(self, lv=1, raided=False):
+        super().__init__('very hard', explored=True)
         self.lv = lv
+        self.raided = raided
 
-        # TODO : success rate in outposts
         match lv:
             case 1:
                 self.name = 'crakudas'
                 self._dif = 'very hard'
                 self.loot = 200
-                self.death = 0.35
+                self.death = 35
                 self.caract = 'rocky'
                 self._eff = 'hurt'
                 
@@ -173,7 +123,7 @@ class outpost(island):
                 self.name = 'kudomagu'
                 self._dif = 'very hard'
                 self.loot = 220
-                self.death = 0.45
+                self.death = 45
                 self.caract = 'jungle'
                 self._eff = 'poisoned'
             
@@ -181,7 +131,7 @@ class outpost(island):
                 self.name = 'kúdaokada'
                 self._dif = 'very hard'
                 self.loot = 220
-                self.death = 0.45
+                self.death = 45
                 self.caract = 'lava'
                 self._eff = 'burnt'
 
@@ -189,7 +139,7 @@ class outpost(island):
                 self.name = 'Áuladujansley'
                 self._dif = 'very hard'
                 self.loot = 220
-                self.death = 0.45
+                self.death = 45
                 self.caract = 'cult'
                 self._eff = 'mad'
             
@@ -197,14 +147,40 @@ class outpost(island):
                 self.name = 'Capital'
                 self._dif = 'very hard'
                 self.loot = 999
-                self.death = 0.
+                self.death = 90
                 self.caract = 'cult'
                 self._eff = 'mad'
-            
+# endregion >>Outpost
+# endregion island
 
-# endregion
+#region use_vars
 
-paraguaio = [
+actions_messages = []
+pirates = [Pirate()]
+anti_attack = 0
+lvl = 1
+
+inventory_passive = [
+    PassItem('food', 5, 5),
+    PassItem('water', 5, 1),
+    PassItem('wood', 3, 10),
+    PassItem('cannonball', 5, 50)
+]
+inventory_active = [
+    ActiveItem('strength_potion', 'strength_potion', 0, 100),
+    ActiveItem('armor', 'armor', 0, 200),
+    ActiveItem('weaponry', 'weaponry', 0, 300)
+]
+sea = [
+    Island('easy'),
+    Island('easy'),
+    Island('easy'),
+    Outpost(lvl)
+]
+
+# region >>miscelaneous vars
+
+parrot_phrases = [
     "Arr! Um tesouro!",
     "Yo ho ho, e uma garrafa de rum!",
     "Cuidado com os canhões!",
@@ -217,57 +193,230 @@ paraguaio = [
     "O capitão está furioso!"
 ]
 
-inventory_pss = [
-    passItem('food',1,5,5),
-    passItem('water',1,5,1),
-    passItem('wood',1,5,10),
-    passItem('cannonball',0,3,50)]
-inventory_act = [
-    activeItem('medcine', 'cure', 1 ,50),
-    activeItem('booze', 'strength', 1 ,30),
-    activeItem('fishbait', '+food', 3 ,10)
-]
+# endregion >>miscelaneous vars
+# endregion use_vars
 
-sea = [
-    island('easy'),
-    island('easy'),
-    island('easy'),
-    outpost()
-]
+# region actions
+effects_percentage = {
+    'tired': 0.8,
+    'hungry': 0.8,
+    'weak': 0.7,
+    'hurt': 0.5,
+    'poisoned': 0.5,
+    'bleeding': 0.5,
+    'crippled': 0.1,
+    'burnt': 0.5,
+    'mad': 0.2,
+    'traitor': 0.0
+}
+itens_percentage = {
+    'strength_potion': 2,
+    'armor': 1.3,
+    'weaponry': 1.5,
+}
+    
+def calculate_success_rate(pirate, island):
+    base_rate = 100 - island.death
+    health_modifier = pirate.hp / 100
+    effect_modifier = 1.0  # Default modifier for 'normal' effect
+    if pirate.status != 'normal':
+        effect_modifier = effects_percentage[pirate.status]
+    
+    item_modifier = 1.0
+    for item in inventory_active:
+        if item.eff != 'none':
+            item_modifier *= itens_percentage[item.eff]
 
-pirates = [
-    pirate()
-]
-unoccupied_pirates = [
+    success_rate = base_rate * health_modifier * effect_modifier * item_modifier
+    return success_rate
 
-]
-for pirata in pirates:
-    if pirata.occupied == "False" and pirate.hp:
-        unoccupied_pirates.append(pirata)
+def raid(pirate, island, boat):
+    success_rate = calculate_success_rate(pirate, island)
+    success_roll = random.randint(1, 100)
+    if success_roll <= success_rate:
+        if pirate.status == 'none':
+            pirate.status = island._eff
+        boat.gold += island.loot  # Add loot to the boat's gold
+        if isinstance(island, Outpost): # ARRUMAR ISSO AQUI
+            island.raided = True
+            
+        else:
+            sea.remove(island)
+        actions_messages.append(f'{pirate.name} invadiu {island.name} com sucesso!')
+    else:
+        pirate.hp -= 50  # Pirate dies if the raid fails
+        pirate.status = island._eff
+        actions_messages.append(f'{pirate.name} machucou-se tentando invadir {island.name}!')
+
+item_per_random = {
+    1: 'food',
+    2: 'water',
+    3: 'wood',
+    4: 'cannonball'
+}
+def collect_resource(pirate):
+    random = random.randint(1, 4)
+    for item in inventory_passive:
+        if item.name == item_per_random[random]:
+            item.qnt += random.randint(1, 3)
+    actions_messages.append(f'{pirate.name} coletou {item_per_random[random]}')
+    pirate.occupied = False
 
 
+def fish(pirate):
+    random = random.randint(1, 5)
+    for item in inventory_passive:
+        if item.name == 'food':
+            item.qnt += random
+    actions_messages.append(f'{pirate.name} pescou {random} peixes')
+    pirate.occupied = False
 
+def watch(pirate):
+    actions_messages.append(f'{pirate.name} vigiou o barco')
+    anti_attack = random.randint(5,15)
+    pirate.occupied = False
 
+# region >>actions_add
+daily_actions = []
+
+def add_action(action):
+    daily_actions.append(action)
+
+def execute_actions():
+    for action in daily_actions:
+        action()
+    daily_actions.clear()
+
+def add_raid_action(pirate, island, boat):
+    def action():
+        raid(pirate, island, boat)
+    add_action(action)
+
+def add_explore_action(pirate, island):
+    def action():
+        island.explore(pirate)
+    add_action(action)
+
+def add_collect_resource_action(pirate):
+    def action():
+        collect_resource(pirate)
+    add_action(action)
+
+def add_fish_action(pirate):
+    def action():
+        fish(pirate)
+    add_action(action)
+
+def add_watch_action(pirate):
+    def action():
+        watch(pirate)
+    add_action(action)
+
+# endregion >>actions_add
+# endregion actions
+
+# region functionalities
+def pass_day(boat,d, lvl):
+    global pirates, unoccupied_pirates
+    attack_chance = random.randint(1, 100)
+
+    inventory_passive[0].qnt -= len(pirates)  # Consume food
+    inventory_passive[1].qnt -= len(pirates)  # Consume water
+    inventory_passive[3].qnt -= len(pirates)  # Consume cannonballs
+    
+    if inventory_passive[0].qnt < 0:
+        boat.hp -= random.randint(10, 20)
+        boat.rep -= random.randint(5, 20)
+        for pirate in pirates:
+            pirate.hp -= random.randint(10, 30)
+            pirate.status = 'hungry'
+            if random.randint(1, 5) == 1:
+                pirate.status = 'mad'
+            if random.randint(1, 10) == 1:
+                pirate.status = 'traitor'
+        actions_messages.append("Fome a bordo!")
+    if inventory_passive[1].qnt < 0:
+        boat.hp -= random.randint(10, 20)
+        boat.rep -= random.randint(5, 20)
+        for pirate in pirates:
+            pirate.hp -= random.randint(10, 30)
+            if random.randint(1, 5) == 1:
+                pirate.status = 'mad'
+            if random.randint(1, 10) == 1:
+                pirate.status = 'traitor'
+        actions_messages.append("Sede a bordo!")
+    
+
+    if attack_chance >= 50 + anti_attack + (inventory_passive[3].qnt)*10:  # 50% chance of pirate attack
+        actions_messages.append("Ataque de piratas!")
+        boat.hp -= random.randint(10, 50)
+        boat.rep -= random.randint(5, 20)
+        boat.gold -= random.randint(10, 50)
+        for pirate in pirates:
+            pirate.hp -= random.randint(10, 50)
+    else:
+        actions_messages.append("Dia tranquilo...")
+    
+    execute_actions()
+    # Update unoccupied pirates list
+    unoccupied_pirates = [pirate for pirate in pirates if not pirate.occupied and pirate.hp]
+    # making all pirates unoccupied
+    for pirate in pirates:
+        pirate.occupied = False
+
+    # Check if the outpost was explored
+    dif_per_lvl = {
+        1: 'easy',
+        2: 'medium',
+        3: 'hard',
+    }
+    if sea[len(sea)-1].explored:
+        sea.clear()
+        match lvl:
+            case 1:
+                sea.append(Island(dif_per_lvl[random.randint(1,2)]))
+                sea.append(Island(dif_per_lvl[random.randint(1,2)]))
+                sea.append(Island(dif_per_lvl[random.randint(1,2)]))
+            case 2:
+                sea.append(Island('medium'))
+                sea.append(Island('medium'))
+                sea.append(Island('medium'))
+            case 3:
+                sea.append(Island(dif_per_lvl[random.randint(2,3)]))
+                sea.append(Island(dif_per_lvl[random.randint(2,3)]))
+                sea.append(Island(dif_per_lvl[random.randint(2,3)]))
+            case 4:
+                sea.append(Island('hard'))
+                sea.append(Island('hard'))
+                sea.append(Island('hard'))
+        sea.append(Outpost(lvl))
+        lvl += 1
+    if lvl == 5:
+        os.system('cls')
+        print(f'Você venceu o jogo! em {d} dias')
+        input('Aperte enter para sair...')
+
+    return
+# endregion functionalities
 
 # region menu
-def resouresMenu(inventory_pss,inventory_act):
+def resources_menu(inventory_passive, inventory_active):
     while True:
         os.system('cls')
-
         print(f'|- nome | qnt | val uni')
 
-        for i in range(0,len(inventory_pss)):
-            print(f'|- {inventory_pss[i].name}| {inventory_pss[i].qnt} | {inventory_pss[i].val}')
+        for item in inventory_passive:
+            print(f'|- {item.name}| {item.qnt} | {item.val}')
 
-        for i in range(0,len(inventory_act)):
-            print(f'|- {inventory_act[i].name}| {inventory_act[i].qnt} | {inventory_act[i].val}')
+        for item in inventory_active:
+            print(f'|- {item.name}| {item.qnt} | {item.val}')
         
         print('---------------------')
         print('ações:\n1 -> usar recurso\n2 -> cancelar')
 
         try:
             r = int(input('>>>'))
-            if r < 3 and r > 0:
+            if 0 < r < 3:
                 break
         except:
             input('input invalido, aperte enter para tentar novamente...')
@@ -277,86 +426,193 @@ def resouresMenu(inventory_pss,inventory_act):
             return 0
         case 1:
             while True:
-                for i in range(0,inventory_act):
-                    print(f'|[{i}]| {inventory_act[i].name}| {inventory_act[i].qnt} | {inventory_act[i].val}')
+                for i, item in enumerate(inventory_active):
+                    print(f'|[{i}]| {item.name}| {item.qnt} | {item.val}')
             
                 try:
                     r = int(input('>>>'))
-                    if r < len(inventory_act) and r > 0:
+                    if 0 <= r < len(inventory_active):
                         break
                 except:
                     input('input invalido, aperte enter para tentar novamente...')
-            if inventory_act[r].qnt > 1:
-                inventory_act[r].useItem()
+            if inventory_active[r].qnt > 0:
+                inventory_active[r].use_item()
             else:
                 input('não há recursos suficientes, pressione enter para continuar...')
             return 0
 
-def seaMenu(sea):
-    for i in range(len(sea)):
-        if sea[i].explored:
-            print(f'[{i}]|{sea[i].name} | dif:{sea[i].dif} | %succ: {sea[i].succ}')
-        else:
-            print(f'[{i}]|{sea[i].name}')
+def sea_menu(sea, boat):
+    while True:
+        os.system('cls')
+
+        for i, island in enumerate(sea):
+            if island.explored == True:
+                print(f'[{i}]|{island.name} | dif:{island._dif} | %succ: {100 - island.death}')
+            else:
+                print(f'[{i}]|{island.name} | dif:{island._dif} | %succ: ???')
         
         try:
             r = int(input('>>>'))
-            if r < len(sea) and r > 0:
-                    break
-        except:
-            input('input invalido, aperte enter para tentar novamente...')
-
-        print(f'{sea[r].name}')
-        os.system('cls')
-        print('1 -- Atacar // 2 -- Explorar // 3 -- Cancelar')
-        try:
-            s = int(input('>>>'))
-            if s < 4 and s > 0:
+            if 0 <= r < len(sea):
                 break
         except:
             input('input invalido, aperte enter para tentar novamente...')
-        match s:
-            case 1:
-                for i in range(unoccupied_pirates):
-                    print(f'{i} ||{unoccupied_pirates[i].name}')
-                    print('selecione um grupo pirata')
-                try:
-                    p = int(input('>>>'))
-                    if p < len(unoccupied_pirates) and p > 0:
-                            break
-                except:
-                        input('input invalido, aperte enter para tentar novamente...')
-                
-                sea[r].raid(unoccupied_pirates[p])
-            case 2:
-                for i in range(unoccupied_pirates):
-                    print(f'{i} ||{unoccupied_pirates[i].name}')
+
+    os.system('cls')
+    print(f'{sea[r].name}')
+    print('1 -- Atacar // 2 -- Explorar // 3 -- Cancelar')
+    try:
+        s = int(input('>>>'))
+        if 0 < s < 4:
+            unoccupied_pirates = [pirate for pirate in pirates if not pirate.occupied and pirate.hp]
+            match s:
+                case 1:
+                    for i, pirate in enumerate(unoccupied_pirates):
+                        print(f'{i} ||{pirate.name}')
                     print('selecione um grupo pirata')
                     try:
                         p = int(input('>>>'))
-                        if p < len(unoccupied_pirates) and p > 0:
-                                break
+                        if 0 <= p < len(unoccupied_pirates):
+                            add_raid_action(unoccupied_pirates[p], sea[r], boat)
+                            unoccupied_pirates[p].occupied = True
+                            
                     except:
-                            input('input invalido, aperte enter para tentar novamente...')
-                sea[r].explore(unoccupied_pirates[p])
-            case 3:
-                return 0
-        
+                        input('input invalido, aperte enter para tentar novamente...')
+                case 2:
+                    for i, pirate in enumerate(unoccupied_pirates):
+                        print(f'{i} ||{pirate.name}')
+                    print('selecione um grupo pirata')
+                    try:
+                        p = int(input('>>>'))
+                        if 0 <= p < len(unoccupied_pirates):
+                            add_explore_action(unoccupied_pirates[p], sea[r])
+                            unoccupied_pirates[p].occupied = True
+                            
+                    except:
+                        input('input invalido, aperte enter para tentar novamente...')
+                case 3:
+                    return 0
+    except:
+        input('input invalido, aperte enter para tentar novamente...')
 
-
-
-def menu(d,boat):
+def assign_task(pirate):
     while True:
         os.system('cls')
-        print(f"-------[{d}]--------")
-        print(f'papagaio diz:{random.choice(paraguaio)}')
-        boat.showStatus()
+        print(f'Selecionado: {pirate.name}')
+        print('Tarefas disponíveis:')
+        print('1 -> Coletar recurso')
+        print('2 -> Pescar')
+        print('3 -> Vigiar')
+        print('4 -> Cancelar')
+
+        try:
+            t = int(input('>>>'))
+            if 0 < t < 5:
+                break
+        except:
+            input('input invalido, aperte enter para tentar novamente...')
+        
+    match t:
+        case 1:
+            add_collect_resource_action(pirate)
+        case 2:
+            add_fish_action(pirate)
+        case 3:
+            add_watch_action(pirate)
+        case 4:
+            return 0
+
+
+
+def pirates_menu(pirates):
+    while True:
+        os.system('cls')
+        print(f'|- nome | hp | status | ocupado')
+
+        for i, pirate in enumerate(pirates):
+            print(f'|- {pirate.name} | {pirate.hp} | {pirate.status} | {pirate.occupied}')
+        
         print('---------------------')
-        print('ações:\n1 -> ver recursos\n2 -> ver mapa\n 3 -> ver piratas\n 4 -> passar o dia')
+        print('ações:\n1 -> selecionar pirata\n2 -> cancelar')
 
         try:
             r = int(input('>>>'))
-            if r < 5 and r > 0:
+            if 0 < r < 3:
+                break
+        except:
+            input('input invalido, aperte enter para tentar novamente...')
+        
+    match r:
+        case 2:
+            return 0
+        case 1:
+            while True:
+                for i, pirate in enumerate(pirates):
+                    print(f'|[{i}]| {pirate.name}| {pirate.hp} | {pirate.status} | {pirate.occupied}')
+            
+                try:
+                    r = int(input('>>>'))
+                    if 0 <= r < len(pirates):
+                        break
+                except:
+                    input('input invalido, aperte enter para tentar novamente...')
+            selected_pirate = pirates[r]
+            assign_task(selected_pirate)
+            return 0
+
+def shop_menu(inventory_passive, inventory_active, pirates):
+    while True:
+        os.system('cls')
+        print('Loja:')
+        print('1 -> Comprar itens passivos')
+        print('2 -> Comprar itens ativos')
+        print('3 -> Comprar piratas')
+        print('4 -> Cancelar')
+
+        try:
+            r = int(input('>>>'))
+            if 0 < r < 5:
+                break
+        except:
+            input('input invalido, aperte enter para tentar novamente...')
+        
+    match r:
+        case 1:
+            # Comprar itens passivos
+            pass
+        case 2:
+            # Comprar itens ativos
+            pass
+        case 3:
+            # Comprar piratas
+            pass
+        case 4:
+            return 0
+
+def menu(d, boat,lvl):
+    if boat.hp <= 0:
+        os.system('cls')
+        print('Seu barco afundou, você perdeu!')
+        input('Aperte enter para sair...')
+        exit()
+    while True:
+        os.system('cls')
+        attack_chance = 50  # 50% chance of pirate attack
+        print(f"-------[dia:{d}]--------")
+        print(f'papagaio diz:{random.choice(parrot_phrases)}')
+        print(f'--------[lvl:{lvl}]---------')
+        for message in actions_messages:
+            print(f">{message}")
+        actions_messages.clear()
+        print('---------------------')
+        print(boat.show_status())
+        print(f'Chance de ataque pirata: {attack_chance - anti_attack - (inventory_passive[3].qnt)*10}%')
+        print('---------------------')
+        print('ações:\n1 -> ver recursos\n2 -> ver mapa\n3 -> ver piratas\n4 -> passar o dia\n5 -> visitar loja')
+
+        try:
+            r = int(input('>>>'))
+            if 0 < r < 6:
                 break
         except:
             input('input invalido, aperte enter para tentar novamente...')
@@ -364,5 +620,34 @@ def menu(d,boat):
     match r:
         case 1:
             os.system('cls')
-            seaMenu(sea)
-# endregion
+            resources_menu(inventory_passive, inventory_active)
+            return d
+        case 2:
+            os.system('cls')
+            sea_menu(sea, boat)
+            return d
+        case 3:
+            os.system('cls')
+            pirates_menu(pirates)
+            return d
+        case 4:
+            
+            pass_day(boat,d,lvl)
+            d+=1
+            return d
+        case 5:
+            os.system('cls')
+            shop_menu(inventory_passive, inventory_active, pirates)
+            return d
+
+def main():
+    d = 1
+    os.system('cls')
+    boat_name = input("Digite o nome do seu barco: ")
+    my_boat = Boat(boat_name)
+    while True:
+        d = menu(d, my_boat,lvl)
+
+if __name__ == "__main__":
+    main()
+# endregion menu
